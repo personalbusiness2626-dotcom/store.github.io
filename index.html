@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yx Studios · Sistemas Roblox</title>
+  <!-- Tailwind + shadcn/ui style via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome para iconos (opcional pero útil) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <!-- Google Font para un toque moderno -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet" />
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    .bg-crimson { background-color: #9b1d20; }
+    .bg-crimson-dark { background-color: #6b1315; }
+    .bg-crimson-light { background-color: #c52a2e; }
+    .text-crimson { color: #9b1d20; }
+    .border-crimson { border-color: #9b1d20; }
+    .hover\:bg-crimson-dark:hover { background-color: #6b1315; }
+    .btn-crimson { background-color: #9b1d20; color: white; }
+    .btn-crimson:hover { background-color: #6b1315; }
+    .shadow-crimson { box-shadow: 0 8px 20px rgba(155, 29, 32, 0.3); }
+    /* detalles card */
+    .product-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .product-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 30px -8px rgba(155, 29, 32, 0.25);
+    }
+    /* badge simulación "en tiempo real" */
+    .live-badge {
+      background: #22c55e;
+      color: white;
+      font-size: 0.65rem;
+      padding: 0.2rem 0.7rem;
+      border-radius: 40px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      letter-spacing: 0.3px;
+    }
+    .live-badge i {
+      font-size: 0.5rem;
+    }
+    /* carrito flotante */
+    .cart-count {
+      background: #9b1d20;
+      color: white;
+      border-radius: 999px;
+      padding: 0.1rem 0.55rem;
+      font-size: 0.7rem;
+      font-weight: bold;
+      margin-left: 0.2rem;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- ====== NAV / HEADER ====== -->
+  <header class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl font-extrabold text-crimson tracking-tight">Yx<span class="text-gray-700">Studios</span></span>
+        <span class="bg-crimson text-white text-[0.6rem] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider ml-1">Dev</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <!-- notificaciones simuladas (Firebase / Supabase later) -->
+        <div class="relative">
+          <button class="text-gray-500 hover:text-crimson transition text-lg">
+            <i class="fas fa-bell"></i>
+            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[0.5rem] font-bold rounded-full w-4 h-4 flex items-center justify-center">3</span>
+          </button>
+        </div>
+        <!-- carrito con contador (simulado) -->
+        <div class="flex items-center gap-1 bg-gray-100 px-3 py-1.5 rounded-full border border-gray-200">
+          <i class="fas fa-shopping-cart text-crimson"></i>
+          <span class="font-semibold text-sm">Carrito</span>
+          <span class="cart-count" id="cartCounter">0</span>
+        </div>
+        <!-- avatar / usuario -->
+        <div class="w-8 h-8 rounded-full bg-crimson flex items-center justify-center text-white font-bold text-sm">
+          <i class="fas fa-user"></i>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ====== HERO ====== -->
+  <section class="bg-gradient-to-r from-crimson to-crimson-dark text-white py-16 md:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div class="inline-block bg-white/20 backdrop-blur-sm px-4 py-1 rounded-full text-sm font-medium mb-4">
+        <i class="fas fa-bolt mr-2"></i> En tiempo real · Firebase · Supabase
+      </div>
+      <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">
+        Sistemas <span class="underline decoration-white/30">Roblox</span> para Devs
+      </h1>
+      <p class="text-xl md:text-2xl text-white/80 max-w-2xl mx-auto mt-4 font-light">
+        Vende tus creaciones con paneles, pagos y notificaciones en vivo.
+        <span class="block text-white/60 text-sm mt-2">Next.js · Tailwind · shadcn/ui · Supabase · PayPal · RevenueCat · Redis</span>
+      </p>
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
+        <a href="#catalogo" class="bg-white text-crimson font-semibold px-8 py-3 rounded-full shadow-lg hover:bg-gray-100 transition flex items-center gap-2">
+          <i class="fas fa-store"></i> Ver catálogo
+        </a>
+        <a href="#" class="bg-crimson-light text-white font-semibold px-8 py-3 rounded-full shadow-lg hover:bg-crimson-dark transition flex items-center gap-2 border border-white/30">
+          <i class="fas fa-rocket"></i> Demo en vivo
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== CATÁLOGO + CARRITO (integrados) ====== -->
+  <section id="catalogo" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex flex-col md:flex-row gap-8">
+      <!-- COLUMNA CATÁLOGO (productos) -->
+      <div class="md:w-2/3">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+            <i class="fas fa-cubes text-crimson"></i> Catálogo · Sistemas
+          </h2>
+          <span class="live-badge"><i class="fas fa-circle text-[0.4rem]"></i> Datos en vivo</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6" id="productGrid">
+          <!-- producto 1 -->
+          <div class="product-card bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden" data-id="1" data-name="Sistema de Tienda" data-price="24.99">
+            <div class="h-32 bg-gradient-to-br from-crimson/10 to-crimson/5 flex items-center justify-center text-crimson text-4xl">
+              <i class="fas fa-store-alt"></i>
+            </div>
+            <div class="p-4">
+              <div class="flex justify-between items-start">
+                <h3 class="font-bold text-lg">Sistema Tienda</h3>
+                <span class="bg-crimson/10 text-crimson text-xs font-bold px-2 py-0.5 rounded-full">Popular</span>
+              </div>
+              <p class="text-sm text-gray-500 mt-1">Paneles, inventario, monedas.</p>
+              <div class="flex items-center justify-between mt-3">
+                <span class="text-2xl font-bold text-crimson">$24.99</span>
+                <button class="add-to-cart bg-crimson text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-crimson-dark transition shadow-sm flex items-center gap-1">
+                  <i class="fas fa-cart-plus"></i> Añadir
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- producto 2 -->
+          <div class="product-card bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden" data-id="2" data-name="Sistema de PVP" data-price="34.99">
+            <div class="h-32 bg-gradient-to-br from-crimson/10 to-crimson/5 flex items-center justify-center text-crimson text-4xl">
+              <i class="fas fa-crosshairs"></i>
+            </div>
+            <div class="p-4">
+              <h3 class="font-bold text-lg">Sistema PvP</h3>
+              <p class="text-sm text-gray-500 mt-1">Rankings, estadísticas, clanes.</p>
+              <div class="flex items-center justify-between mt-3">
+                <span class="text-2xl font-bold text-crimson">$34.99</span>
+                <button class="add-to-cart bg-crimson text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-crimson-dark transition shadow-sm flex items-center gap-1">
+                  <i class="fas fa-cart-plus"></i> Añadir
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- producto 3 -->
+          <div class="product-card bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden" data-id="3" data-name="Sistema de Economía" data-price="19.99">
+            <div class="h-32 bg-gradient-to-br from-crimson/10 to-crimson/5 flex items-center justify-center text-crimson text-4xl">
+              <i class="fas fa-coins"></i>
+            </div>
+            <div class="p-4">
+              <h3 class="font-bold text-lg">Economía + Banco</h3>
+              <p class="text-sm text-gray-500 mt-1">Transferencias, log, tasas.</p>
+              <div class="flex items-center justify-between mt-3">
+                <span class="text-2xl font-bold text-crimson">$19.99</span>
+                <button class="add-to-cart bg-crimson text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-crimson-dark transition shadow-sm flex items-center gap-1">
+                  <i class="fas fa-cart-plus"></i> Añadir
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- producto 4 -->
+          <div class="product-card bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden" data-id="4" data-name="Sistema de Misiones" data-price="29.99">
+            <div class="h-32 bg-gradient-to-br from-crimson/10 to-crimson/5 flex items-center justify-center text-crimson text-4xl">
+              <i class="fas fa-tasks"></i>
+            </div>
+            <div class="p-4">
+              <h3 class="font-bold text-lg">Misiones Diarias</h3>
+              <p class="text-sm text-gray-500 mt-1">Recompensas, progreso, reset.</p>
+              <div class="flex items-center justify-between mt-3">
+                <span class="text-2xl font-bold text-crimson">$29.99</span>
+                <button class="add-to-cart bg-crimson text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-crimson-dark transition shadow-sm flex items-center gap-1">
+                  <i class="fas fa-cart-plus"></i> Añadir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-400 mt-6 flex items-center gap-2">
+          <i class="fas fa-database text-crimson"></i> Datos sincronizados con Firebase + Supabase · Cache Redis
+        </p>
+      </div>
+
+      <!-- COLUMNA CARRITO / CHECKOUT (simulación pago en tiempo real) -->
+      <div class="md:w-1/3">
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 sticky top-24">
+          <h3 class="text-xl font-bold flex items-center gap-2 text-gray-800 border-b pb-3 border-gray-100">
+            <i class="fas fa-shopping-bag text-crimson"></i> Carrito
+            <span class="ml-auto text-sm font-normal bg-gray-100 px-3 py-0.5 rounded-full" id="cartItemsCount">0</span>
+          </h3>
+          <div class="py-4 min-h-[120px]" id="cartItemsList">
+            <!-- items dinámicos -->
+            <p class="text-gray-400 text-sm text-center py-6"><i class="fas fa-box-open mr-2"></i>Carrito vacío</p>
+          </div>
+          <div class="border-t border-gray-100 pt-4 mt-2">
+            <div class="flex justify-between font-semibold text-lg">
+              <span>Total</span>
+              <span class="text-crimson" id="cartTotal">$0.00</span>
+            </div>
+            <!-- formulario de pago simulado (credenciales / PayPal / RevenueCat) -->
+            <div class="mt-5 space-y-3">
+              <div class="relative">
+                <input type="text" placeholder="Correo o usuario" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-crimson/30 focus:border-crimson outline-none transition" />
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <input type="text" placeholder="Tarjeta (demo)" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-crimson/30 focus:border-crimson outline-none transition" />
+                <input type="text" placeholder="CVV" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-crimson/30 focus:border-crimson outline-none transition" />
+              </div>
+              <button id="checkoutBtn" class="w-full bg-crimson text-white font-bold py-3 rounded-xl shadow-md hover:bg-crimson-dark transition flex items-center justify-center gap-2 text-base">
+                <i class="fab fa-paypal"></i> Pagar con PayPal / RevenueCat
+              </button>
+              <div class="flex items-center justify-center gap-2 text-[0.6rem] uppercase text-gray-400 tracking-wider">
+                <i class="fas fa-lock"></i> Pago seguro · Simulación en tiempo real
+              </div>
+              <!-- notificaciones simuladas (Firebase) -->
+              <div id="notificationArea" class="mt-3 text-xs bg-gray-50 rounded-xl p-3 border border-gray-200 text-gray-600 flex items-center gap-2">
+                <i class="fas fa-bell text-crimson animate-pulse"></i>
+                <span id="notificationMessage">Sistema listo · Notificaciones en vivo</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== FOOTER con stack tecnológico ====== -->
+  <footer class="bg-gray-900 text-white/70 py-8 mt-12 border-t border-crimson/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-3">
+        <span class="text-crimson font-bold text-xl">Yx Studios</span>
+        <span class="text-xs bg-white/10 px-3 py-1 rounded-full">v2.0 · Next.js + Supabase</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-4 text-sm">
+        <span><i class="fab fa-js-square mr-1"></i> Next.js</span>
+        <span><i class="fab fa-react mr-1"></i> React Native</span>
+        <span><i class="fas fa-database mr-1"></i> Firebase</span>
+        <span><i class="fas fa-cloud mr-1"></i> Supabase</span>
+        <span><i class="fab fa-paypal mr-1"></i> PayPal</span>
+        <span><i class="fas fa-chart-line mr-1"></i> RevenueCat</span>
+        <span><i class="fas fa-memory mr-1"></i> Redis</span>
+        <span><i class="fas fa-bell mr-1"></i> Notificaciones</span>
+      </div>
+      <div class="text-xs text-white/40">
+        <i class="fas fa-circle text-green-400 mr-1"></i> En tiempo real con Firebase
+      </div>
+    </div>
+  </footer>
+
+  <!-- ====== JS SIMULADO (carrito + notificaciones + pago) ====== -->
+  <script>
+    (function() {
+      // Estado del carrito
+      let cart = [];
+      const cartItemsList = document.getElementById('cartItemsList');
+      const cartTotal = document.getElementById('cartTotal');
+      const cartCounter = document.getElementById('cartCounter');
+      const cartItemsCount = document.getElementById('cartItemsCount');
+      const notificationMessage = document.getElementById('notificationMessage');
+
+      // Función para actualizar UI del carrito
+      function renderCart() {
+        // limpiar
+        cartItemsList.innerHTML = '';
+        if (cart.length === 0) {
+          cartItemsList.innerHTML = '<p class="text-gray-400 text-sm text-center py-6"><i class="fas fa-box-open mr-2"></i>Carrito vacío</p>';
+          cartTotal.textContent = '$0.00';
+          cartCounter.textContent = '0';
+          cartItemsCount.textContent = '0';
+          return;
+        }
+
+        let total = 0;
+        // agrupar items (para mostrar cantidad)
+        const grouped = cart.reduce((acc, item) => {
+          if (!acc[item.id]) {
+            acc[item.id] = { ...item, qty: 1 };
+          } else {
+            acc[item.id].qty += 1;
+          }
+          return acc;
+        }, {});
+
+        Object.values(grouped).forEach(item => {
+          total += item.price * item.qty;
+          const div = document.createElement('div');
+          div.className = 'flex items-center justify-between border-b border-gray-100 py-2 text-sm';
+          div.innerHTML = `
+            <div class="flex items-center gap-2">
+              <span class="font-medium">${item.name}</span>
+              <span class="text-xs bg-gray-200 px-2 py-0.5 rounded-full">x${item.qty}</span>
+            </div>
+            <span class="text-crimson font-semibold">$${(item.price * item.qty).toFixed(2)}</span>
+          `;
+          cartItemsList.appendChild(div);
+        });
+
+        cartTotal.textContent = `$${total.toFixed(2)}`;
+        const totalItems = cart.length;
+        cartCounter.textContent = totalItems;
+        cartItemsCount.textContent = totalItems;
+      }
+
+      // Añadir producto al carrito
+      function addToCart(productId, productName, productPrice) {
+        cart.push({ id: productId, name: productName, price: parseFloat(productPrice) });
+        renderCart();
+        // Notificación en vivo (simulada Firebase)
+        notificationMessage.innerHTML = `<i class="fas fa-plus-circle text-green-500 mr-1"></i> Añadido: ${productName} · $${productPrice}`;
+        // Simular notificación push (cambiar después de 3s)
+        setTimeout(() => {
+          notificationMessage.innerHTML = `<i class="fas fa-bell text-crimson mr-1"></i> Carrito actualizado · ${cart.length} items`;
+        }, 2500);
+      }
+
+      // Event listeners para botones "Añadir"
+      document.querySelectorAll('.add-to-cart').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const card = this.closest('.product-card');
+          if (!card) return;
+          const id = card.dataset.id;
+          const name = card.dataset.name;
+          const price = card.dataset.price;
+          addToCart(id, name, price);
+        });
+      });
+
+      // Simular pago (checkout)
+      document.getElementById('checkoutBtn').addEventListener('click', function() {
+        if (cart.length === 0) {
+          notificationMessage.innerHTML = `<i class="fas fa-exclamation-triangle text-amber-500 mr-1"></i> El carrito está vacío.`;
+          return;
+        }
+        // simulación de pago con "credenciales" y RevenueCat / PayPal
+        const total = cart.reduce((acc, item) => acc + item.price, 0);
+        notificationMessage.innerHTML = `<i class="fas fa-spinner fa-spin text-crimson mr-1"></i> Procesando pago con PayPal/RevenueCat...`;
+        // simular éxito
+        setTimeout(() => {
+          notificationMessage.innerHTML = `<i class="fas fa-check-circle text-green-500 mr-1"></i> ¡Pago exitoso! (simulado) · Total $${total.toFixed(2)}`;
+          // vaciar carrito después de pago
+          cart = [];
+          renderCart();
+          // notificación adicional
+          setTimeout(() => {
+            notificationMessage.innerHTML = `<i class="fas fa-bell text-crimson mr-1"></i> Compra completada · Revisa tu correo (demo)`;
+          }, 2000);
+        }, 2000);
+      });
+
+      // Simular notificación de "bienvenida" al cargar
+      setTimeout(() => {
+        notificationMessage.innerHTML = `<i class="fas fa-check-circle text-green-500 mr-1"></i> Conexión en vivo con Firebase · Cache Redis`;
+      }, 1000);
+    })();
+  </script>
+
+  <!-- Pequeño detalle: shadcn/ui inspirado en los botones y tarjetas (uso de clases) -->
+  <div style="display: none;">shadcn/ui · Tailwind · Next.js · Supabase · Firebase · PayPal · RevenueCat · Redis · React Native</div>
+</body>
+</html>
